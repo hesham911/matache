@@ -2,64 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TaskStatusEnum;
+use App\Http\Requests\CreateTaskRequest;
 use App\Models\Task;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index(): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        //
+        $data = Task::query()->myTask()->filter(\request('filter'))->get();
+
+        return view('tasks.index',compact('data'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+
+    public function create(): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        //
+        return view('tasks.form.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+
+    public function store(CreateTaskRequest $request): RedirectResponse
     {
-        //
+       Task::query()->create($request->all());
+
+       return back()->with('success','Congratulations, You success to create new task');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Task $task)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Task $task)
     {
-        //
+        return view('tasks.form.edit');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Task $task)
+
+    public function update(CreateTaskRequest $request, Task $task): RedirectResponse
     {
-        //
+        $task->update($request->all());
+
+        return back()->with('warning','Congratulations, You success to update task');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Task $task)
+
+    public function destroy(Task $task): RedirectResponse
     {
-        //
+        $task->delete();
+
+        return back()->with('warning','Congratulations, You success to update task');
     }
 }

@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\TaskStatusEnum;
 
 return new class extends Migration
 {
@@ -13,6 +14,14 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->unsigned()->constrained('users');
+            $table->text('content');
+            $table->enum('status',[
+                TaskStatusEnum::Done->value,
+                TaskStatusEnum::Undone->value,
+                TaskStatusEnum::Archive->value
+            ])->default(TaskStatusEnum::Undone->value);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
